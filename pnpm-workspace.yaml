@@ -1,6 +1,10 @@
 autoInstallPeers: true
 allowBuilds:
+  '@parcel/watcher': false
   nx: true
+  unrs-resolver: false
+  "@nestjs/core": false
+  esbuild: true
 minimumReleaseAgeExclude:
   - '@nx/devkit@24.0.5'
   - '@nx/js@24.0.5'
@@ -16,3 +20,11 @@ minimumReleaseAgeExclude:
   - '@nx/nx-win32-x64-msvc@24.0.5'
   - '@nx/workspace@24.0.5'
   - nx@24.0.5
+  - '@nx/docker@24.0.5'
+  - '@nx/eslint@24.0.5'
+  - '@nx/jest@24.0.5'
+  - '@nx/nest@24.0.5'
+  - '@nx/node@24.0.5'
+  - '@nx/eslint-plugin@24.0.5'
+  - '@nx/web@24.0.5'
+  - '@nx/webpack@24.0.5'

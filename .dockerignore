@@ -1,0 +1,16 @@
+node_modules
+dist
+tmp
+out-tsc
+.git
+.gitignore
+.nx/cache
+.nx/workspace-data
+.vscode
+.idea
+*.log
+.env
+.env.*
+!.env.example
+coverage
+

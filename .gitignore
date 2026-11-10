@@ -43,3 +43,18 @@ Thumbs.db
 .nx/migrate-runs
 .claude/worktrees
 .claude/settings.local.json
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Drizzle generated output
+# (migrations are committed; drizzle-studio cache is not)
+.drizzle/
+
+# Test coverage
+coverage/
+
+# pnpm
+.pnpm-store/

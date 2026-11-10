@@ -1,96 +1,208 @@
-# LmsPlatform
+# LMS Platform — Backend
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A modular monolith LMS (Learning Management System) backend built with **NestJS**, managed as an **Nx + pnpm** monorepo, with **PostgreSQL** and **Redis** (via Docker) and **Drizzle ORM**.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+> **Status:** Initial scaffold only. No business logic has been implemented yet.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-## Run tasks
+## Prerequisites
 
-To run tasks with Nx use:
+| Tool | Version |
+|------|---------|
+| Node.js | ≥ 22 LTS |
+| pnpm | ≥ 9 |
+| Docker Desktop / Docker Engine + Compose | ≥ 24 |
 
-```sh
-npx nx <target> <project-name>
+---
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
+pnpm install
 ```
 
-For example:
+### 2. Configure environment variables
 
-```sh
-npx nx build myproject
+`.env.example` is a **committed template** with placeholder values only. Create a local `.env` file from it. Never commit `.env`.
+
+```bash
+cp .env.example .env
+# Then edit .env with your local values
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 3. Start local Services (API, PostgreSQL & Redis)
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Build and start all services (API, PostgreSQL, Redis)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 
-## Add new projects
+# Or start only dependencies (PostgreSQL & Redis)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+# Check running containers
+docker compose ps
 
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+# View service logs
+docker compose logs -f api
+docker compose logs -f postgres
+docker compose logs -f redis
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+### 4. Stop services
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+```bash
+# Stop containers — data is preserved
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+# Stop containers AND delete local data permanently
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+> ⚠️ `down -v` permanently removes the named Docker volumes `lms_postgres_data` and `lms_redis_data` and all their data.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Set up CI!
+## Running in Development (Watch / Hot-Reload Mode)
 
-### Step 1
+You have two workflows to run in development with hot reload:
 
-To connect to Nx Cloud, run the following command:
+### Option A: Fully Containerized in Docker (Recommended if you want everything in Docker)
 
-```sh
-npx nx connect
+The development compose overlay (`docker-compose.dev.yml`) mounts your local source files into the container and targets the `dev` stage in [`docker/Dockerfile`](file:///d:/PR/backend/lms-platform/docker/Dockerfile):
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+- Edits made on your host machine will be detected automatically and trigger rebuilds inside the container.
+- Polling (`WATCHPACK_POLLING=true`) is configured to ensure file changes are reliably caught on Windows.
+
+### Option B: Local Host Process (Fastest for day-to-day coding)
+
+Run PostgreSQL and Redis in Docker, and run NestJS directly on your machine:
+
+```bash
+# 1. Start PostgreSQL & Redis
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis
+
+# 2. Run the NestJS API in watch mode
+pnpm run start:dev
+# or:
+pnpm exec nx serve api
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+---
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Production Build
 
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+# Production build locally
+pnpm run build
+# or:
+pnpm exec nx build api
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+The API serves at `http://localhost:3000/api`.
 
-## Install Nx Console
+---
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+## Database Workflow (Drizzle ORM)
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Generate a new migration from schema changes
+pnpm run db:generate
 
-## Useful links
+# Apply pending migrations to the database
+pnpm run db:migrate
 
-Learn more:
+# Open Drizzle Studio (GUI for the database)
+pnpm run db:studio
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# Push schema directly (dev shortcut, bypasses migration files)
+pnpm run db:push
+```
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+> No tables have been defined yet. Run these commands only after adding schema files in
+> `libs/infrastructure/database/postgres/schema/`.
+
+---
+
+## Project Structure
+
+```
+lms-platform/
+├── apps/
+│   ├── api/                # NestJS application — composition root only
+│   └── api-e2e/            # API end-to-end test project
+│
+├── libs/
+│   ├── shared/
+│   │   └── kernel/         # Framework-independent shared abstractions
+│   │       ├── domain/
+│   │       ├── types/
+│   │       └── errors/
+│   │
+│   ├── infrastructure/     # Technical adapters and integrations
+│   │   ├── database/
+│   │   │   └── postgres/
+│   │   │       └── schema/ # Drizzle table definitions go here
+│   │   ├── storage/
+│   │   ├── logger/
+│   │   ├── encryption/
+│   │   └── notifications/
+│   │
+│   └── features/
+│       └── identity/       # Only feature library in this phase
+│           ├── domain/       # Business rules — no framework imports
+│           ├── application/  # Use cases and ports
+│           ├── infrastructure/ # DB repositories, external adapters
+│           └── presentation/  # HTTP controllers and DTOs
+│
+├── tools/
+│   └── database/
+│       ├── migrations/     # Drizzle-generated SQL migrations
+│       ├── seeders/
+│       ├── factories/
+│       └── scripts/
+│
+├── docker/                 # Additional Docker configuration files
+├── docs/
+│   └── architecture/       # Architecture decision records
+│
+├── .env.example            # Committed template — copy to .env
+├── docker-compose.yml      # Base PostgreSQL service definition
+├── docker-compose.dev.yml  # Local dev overrides (port binding)
+└── drizzle.config.ts       # Drizzle Kit configuration
+```
+
+---
+
+## Architecture
+
+This project follows a **Modular Monolith** pattern with four clean-architecture layers per feature:
+
+| Layer | Responsibility | Allowed dependencies |
+|-------|---------------|----------------------|
+| `domain` | Business rules, entities, value objects | `shared/kernel` only |
+| `application` | Use cases, ports (interfaces) | `domain`, `shared/kernel` |
+| `infrastructure` | DB repos, external service adapters | `domain`, `application`, `shared/kernel` |
+| `presentation` | HTTP controllers, request/response DTOs | `application`, `domain`, `shared/kernel` |
+
+**Module boundaries are enforced by ESLint (`@nx/enforce-module-boundaries`).**
+
+### Adding a new feature
+
+1. Copy the `libs/features/identity/` structure.
+2. Rename it to your feature (e.g., `libs/features/courses/`).
+3. Add Nx project tags (`scope:<feature>`, `layer:<layer>`) to each library's `project.json`.
+4. Register the feature module in `apps/api/src/app/app.module.ts`.
+
+---
+
+## Notes
+
+- **`identity`** is the only feature library created in this initial scaffold.
+- The API contains only the NestJS bootstrapped application; no LMS business logic is implemented.
+- BullMQ, Nginx, MinIO, and worker processes are out of scope for this phase.
