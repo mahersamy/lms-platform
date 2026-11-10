@@ -20,20 +20,17 @@
       "@lms/identity": [
         "./libs/features/identity/src/index.ts"
       ],
-      "@lms-platform/storage": [
-        "./libs/infrastructure/storage/src/index.ts"
-      ],
-      "@lms-platform/notifications": [
-        "./libs/infrastructure/notifications/src/index.ts"
-      ],
-      "@lms-platform/config": [
+      "@lms/infra-config": [
         "./libs/infrastructure/config/src/index.ts"
       ],
-      "@lms-platform/database": [
+      "@lms/infra-database": [
         "./libs/infrastructure/database/src/index.ts"
       ],
-      "@lms-platform/logger": [
+      "@lms/infra-logger": [
         "./libs/infrastructure/logger/src/index.ts"
+      ],
+      "@lms/shared-kernel": [
+        "./libs/shared/kernel/src/index.ts"
       ]
     }
   },
