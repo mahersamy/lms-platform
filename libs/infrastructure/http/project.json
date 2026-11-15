@@ -1,0 +1,9 @@
+{
+  "name": "http",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/http/src",
+  "projectType": "library",
+  "tags": ["type:infra", "scope:shared", "level:base"],
+  "// targets": "to see all targets run: nx show project http --web",
+  "targets": {}
+}

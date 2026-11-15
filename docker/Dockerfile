@@ -21,13 +21,13 @@ ENV APP=${APP}
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Install dependencies (including dev)
-RUN pnpm install --frozen-lockfile
+# Do NOT install here — node_modules is a named volume populated at container startup.
+# The pnpm store volume (pnpm_store) is shared so installs are near-instant after the first run.
 
 # Source is mounted at runtime — no COPY needed here
 EXPOSE 3000
 
-CMD ["nx", "serve", "api"]
+CMD ["sh", "-c", "pnpm install --frozen-lockfile && node tools/scripts/dev-watch.js"]
 
 # ─────────────────────────────────────────
 # Stage 1: Build

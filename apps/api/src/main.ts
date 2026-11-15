@@ -3,14 +3,30 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // ─── Global prefix & versioning ───────────────────────────────────────
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+
+  // ─── Global validation ────────────────────────────────────────────────
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  // ─── Graceful shutdown ────────────────────────────────────────────────
+  app.enableShutdownHooks();
+
   const port = process.env.PORT || 3000;
   await app.listen(port);
   // Set when Nx waits for this server to be ready
@@ -23,7 +39,7 @@ async function bootstrap() {
       // @nx/js isn't installed
     }
   }
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}/v1`);
 }
 
 bootstrap();

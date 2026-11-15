@@ -6,10 +6,15 @@ services:
       target: dev
       args:
         APP: api
-    command: node tools/scripts/dev-watch.js
+    # Install inside the container first (node_modules bind-mount shadows the image layer),
+    # then start the webpack watcher. The pnpm store volume makes reinstalls near-instant.
+    command: sh -c "pnpm install --frozen-lockfile && node tools/scripts/dev-watch.js"
     volumes:
       - .:/app
-      - /app/node_modules
+      # Named volume for pnpm's content-store → packages are cached between rebuilds
+      - pnpm_store:/root/.local/share/pnpm/store
+      # Named volume for node_modules → survives container recreation, populated at startup
+      - api_node_modules:/app/node_modules
       - /app/dist
       - /app/.nx
     environment:
@@ -26,3 +31,7 @@ services:
   redis:
     ports:
       - "${REDIS_PORT:-6379}:6379"
+
+volumes:
+  pnpm_store:
+  api_node_modules:

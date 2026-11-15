@@ -31,6 +31,12 @@
       ],
       "@lms/shared-kernel": [
         "./libs/shared/kernel/src/index.ts"
+      ],
+      "@lms/infra-http": [
+        "./libs/infrastructure/http/src/index.ts"
+      ],
+      "@lms-platform/http": [
+        "./libs/infrastructure/http/src/index.ts"
       ]
     }
   },
