@@ -2,6 +2,7 @@
 const { spawn } = require('node:child_process');
 const path = require('node:path');
 const webpack = require('webpack');
+const { createProjectGraphAsync } = require('nx/src/project-graph/project-graph');
 
 const root = path.resolve(__dirname, '../..');
 const mainFile = path.join(root, 'dist/apps/api/main.js');
@@ -117,7 +118,10 @@ function restartServer() {
 }
 
 // Initialize Webpack watch mode.
-function startWatcher() {
+async function startWatcher() {
+  log('Initializing Nx project graph...');
+  await createProjectGraphAsync();
+
   log('Starting Webpack watcher...');
 
   const config = require(webpackConfigPath);
@@ -200,4 +204,7 @@ process.on('uncaughtException', (error) => {
   shutdown('uncaughtException');
 });
 
-startWatcher();
+startWatcher().catch((error) => {
+  console.error('[dev-watch] Fatal error:', error);
+  process.exit(1);
+});

@@ -37,6 +37,24 @@
       ],
       "@lms-platform/http": [
         "./libs/infrastructure/http/src/index.ts"
+      ],
+      "@lms/shared-cache": [
+        "./libs/shared/cache/src/index.ts"
+      ],
+      "@lms-platform/cache": [
+        "./libs/shared/cache/src/index.ts"
+      ],
+      "@lms/infra-redis": [
+        "./libs/infrastructure/redis/src/index.ts"
+      ],
+      "@lms-platform/redis": [
+        "./libs/infrastructure/redis/src/index.ts"
+      ],
+      "@lms/infra-redis-cache": [
+        "./libs/infrastructure/redis-cache/src/index.ts"
+      ],
+      "@lms-platform/redis-cache": [
+        "./libs/infrastructure/redis-cache/src/index.ts"
       ]
     }
   },

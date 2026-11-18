@@ -1,0 +1,9 @@
+{
+  "name": "redis",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/redis/src",
+  "projectType": "library",
+  "tags": ["type:infra", "scope:shared", "level:base"],
+  "// targets": "to see all targets run: nx show project redis --web",
+  "targets": {}
+}

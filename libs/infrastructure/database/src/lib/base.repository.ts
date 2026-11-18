@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import type { PgColumn, PgTable } from 'drizzle-orm/pg-core';
 import { Database, TransactionManager } from './transaction-manager';
 import { mapDbError } from './errors/database-error.mapper';
+import { Repository } from '@lms/shared-kernel';
 
 export type TableWithId = PgTable & {
   id: PgColumn;
@@ -9,7 +10,7 @@ export type TableWithId = PgTable & {
   $inferInsert: Record<string, any>;
 };
 
-export abstract class BaseRepository<TTable extends TableWithId, TEntity> {
+export abstract class BaseRepository<TTable extends TableWithId, TEntity> implements Repository<TEntity> {
   protected abstract readonly table: TTable;
 
   constructor(protected readonly tx: TransactionManager) { }

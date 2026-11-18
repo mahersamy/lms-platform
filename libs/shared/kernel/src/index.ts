@@ -3,6 +3,7 @@ export { Entity } from './lib/domain/entity';
 export { AggregateRoot } from './lib/domain/aggregate-root';
 export { ValueObject } from './lib/domain/value-object';
 export type { DomainEvent } from './lib/domain/domain-event';
+export type { Repository } from './lib/domain/repository.interface';
 
 // Error base
 export { DomainError } from './lib/errors/domain-error';
